@@ -52,44 +52,60 @@ bootstrap:
       # atm (v1) hardcoded is one additional rawdb
             - state
 
-    # Mapping between IDP (Azure Active Directory) groups and CDF groups.
+  # Mapping between IDP (Azure Active Directory) groups and CDF groups.
     idp-cdf-mappings:
     # Support multiple CDF Projects, like dev/test/prod in one config.
-        - cdf-project: <CDF project name> # i.e. bootcamp-01-test
+        - cdf-project: cdf-bootcamp-01-test # i.e. bootcamp-01-test
           mappings:
               - cdf-group: cdf:root
-                idp-source-id: <Azure AD group id>
-                idp-source-name: <Azure AD group name>
+                idp-source-id: a82c121e-11b0-457e-b204-4cbc0b77ff9e
+                idp-source-name: bootcamp-01-test-admin
               - cdf-group: cdf:all:owner
-                idp-source-id: <AAD Object Id> # for the AAD Group to be matched to cdf-group
-                idp-source-name: <AAD Group name> # i.e. bootcamp-01-test-all-owner
+                idp-source-id: d21a982d-a651-4e4c-a451-96fc66bb98d3 # for the AAD Group to be matched to cdf-group
+                idp-source-name: bootcamp-01-test-all-owner # i.e. bootcamp-01-test-all-owner
               - cdf-group: cdf:all:read
-                idp-source-id: <AAD Object Id> # for the AAD Group to be matched to cdf-group
-                idp-source-name: <AAD Group name> # i.e. bootcamp-01-test-all-read
-
-
+                idp-source-id: 71334fe5-027a-48f5-af20-6f24ed685c85 # for the AAD Group to be matched to cdf-group
+                idp-source-name: bootcamp-01-test-all-read
+        - cdf-project: cdf-bootcamp-01-prod # i.e. bootcamp-01-prod
+          mappings:
+              - cdf-group: cdf:root
+                idp-source-id: 9db13b39-aa31-4ffd-964f-108fe4aa9aa3
+                idp-source-name: bootcamp-01-prod-admin
+              - cdf-group: cdf:all:owner
+                idp-source-id: f871172b-f7f1-4d6c-a91b-0a3bf4bf32c0 # for the AAD Group to be matched to cdf-group
+                idp-source-name: bootcamp-01-prod-all-owner # i.e. bootcamp-01-test-all-owner
+              - cdf-group: cdf:all:read
+                idp-source-id: c56cb099-b284-4a7a-91ec-352e04cccad2 # for the AAD Group to be matched to cdf-group
+                idp-source-name: bootcamp-01-prod-all-read
     namespaces:
-        # Typical config will have a namespace for data sources ("src") and a namespace for use cases ("uc")
-        - ns-name: <Namespace name>
+    # Typical config will have a namespace for data sources ("src") and a namespace for use cases ("uc")
+        - ns-name: src
           description: Data sources for the Ice Cream Factory # HINT
-
-          # Node names will normally follow src:001:srcname or uc:001:usecasename naming convention
+      # Node names will normally follow src:001:srcname or uc:001:usecasename naming convention
           ns-nodes:
-              - node-name: <Node name>
-                description: Data from SAP # HINT
-        # HINT: Add another namespace below
+              - node-name: src:001:sap
+                description: Source 01 data from SAP
+              - node-name: src:002:opcua
+                description: Source 02 data from opcua
 
+        - ns-name: uc
+          description: Data sources for the Ice Cream Factory # HINT
+      # Node names will normally follow src:001:srcname or uc:001:usecasename naming convention
+          ns-nodes:
+              - node-name: uc:001:oee
+                description: Use case 001 Over all Equipment effectiveness
+                shared-access:
+                    read:
+                        - node-name: src:001:sap
+                        - node-name: src:002:opcua
 
-# de-facto standards for CDF CogniteClient and logger configuration.
-# Following the same parameter structure as the 'Cognite Python Extractor-Utilities'
-# and 'Cognite DB Extractor' configuration.
 cognite: # kwargs to pass to the CogniteClient, Environment variable format: ${ENVIRONMENT_VARIABLE_NAME}
-    # host: https://${BOOTSTRAP_CDF_CLUSTER}.cognitedata.com/
+  # host: https://${BOOTSTRAP_CDF_CLUSTER}.cognitedata.com/
     host: ${BOOTSTRAP_CDF_HOST}
     project: ${BOOTSTRAP_CDF_PROJECT}
-    #
-    # AAD IdP login credentials:
-    #
+  #
+  # AAD IdP login credentials:
+  #
     idp-authentication:
         client-id: ${BOOTSTRAP_IDP_CLIENT_ID}
         secret: ${BOOTSTRAP_IDP_CLIENT_SECRET}
